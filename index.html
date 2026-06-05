@@ -17,8 +17,12 @@
         header { background: var(--primary); color: white; padding: 15px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; }
         .container { max-width: 800px; margin: auto; padding: 12px; }
 
+        /* 화면 전환용 클래스 */
+        .screen { display: none; }
+        .screen.active { display: block; }
+
         /* 앱 전환 버튼 */
-        .app-switch-btn { position: absolute; top: 15px; right: 15px; background: #fff; color: var(--primary); border: none; padding: 5px 10px; border-radius: 20px; font-weight: bold; font-size: 12px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .app-switch-btn { position: absolute; top: 15px; right: 15px; background: #fff; color: var(--primary); border: none; padding: 5px 10px; border-radius: 20px; font-weight: bold; font-size: 12px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); text-decoration: none; }
 
         /* 소식 & 일정 탭 시스템 */
         .info-section { background: var(--card-bg); border-radius: 10px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; border: 1px solid var(--border); }
@@ -30,22 +34,26 @@
         .info-content { padding: 15px; display: none; }
         .info-content.active { display: block; }
         .info-list { list-style: none; padding: 0; margin: 0; }
-        .info-list li { padding: 8px 0; border-bottom: 1px dashed var(--border); font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
+        /* 리스트 클릭 시 호버 효과 부여 */
+        .info-list li { padding: 8px 0; border-bottom: 1px dashed var(--border); font-size: 13px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .info-list li:active { background-color: rgba(0,0,0,0.05); }
         .info-list li:last-child { border-bottom: none; }
         .info-region { background: var(--secondary); color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px; margin-right: 5px; }
         .info-date { color: #0277BD; font-weight: bold; font-size: 11px; white-space: nowrap; margin-left: 5px; }
         [data-theme="dark"] .info-date { color: #4fc3f7; }
 
-        .official-link-btn { width: 100%; padding: 10px; margin-top: 10px; background: #f0f4f8; color: #0277BD; border: 1px solid #0277BD; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 5px; }
+        /* 공식 링크 버튼 (a 태그로 안정성 강화) */
+        .official-link-btn { width: 100%; padding: 12px 10px; margin-top: 10px; background: #f0f4f8; color: #0277BD; border: 1px solid #0277BD; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; text-decoration: none; box-sizing: border-box; font-size: 14px; }
         [data-theme="dark"] .official-link-btn { background: #003344; color: #4fc3f7; border-color: #4fc3f7; }
 
         /* 지역 분류 탭 (가로 스크롤) */
-        .region-scroll { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 10px; margin-bottom: 5px; scrollbar-width: none; }
+        .region-scroll { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 10px; margin-bottom: 5px; scrollbar-width: none; align-items: center; }
         .region-scroll::-webkit-scrollbar { display: none; }
         .region-btn { padding: 8px 16px; border-radius: 20px; background: var(--card-bg); border: 1px solid var(--border); color: var(--text); font-weight: bold; font-size: 13px; white-space: nowrap; cursor: pointer; }
         .region-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
         .region-btn.fav { color: #f57f17; border-color: #f57f17; }
         .region-btn.fav.active { background: #f57f17; color: white; }
+        .region-btn.add-btn { background: var(--accent); color: white; border-color: var(--accent); padding: 8px 12px; }
 
         /* 검색창 고정 */
         .search-area { display: flex; margin-bottom: 15px; position: sticky; top: 0px; z-index: 100; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
@@ -55,8 +63,8 @@
         /* 구장 카드 */
         .card { background: var(--card-bg); border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-        .name { font-size: 18px; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 5px; }
-        .holes { background: var(--secondary); color: white; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; height: fit-content; }
+        .name { font-size: 18px; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+        .holes { background: var(--secondary); color: white; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; height: fit-content; white-space: nowrap; }
         .info { font-size: 13px; color: #666; line-height: 1.6; margin-bottom: 12px; }
         [data-theme="dark"] .info { color: #aaa; }
         
@@ -76,66 +84,134 @@
         [data-theme="dark"] .btn-fav.active { background: #4a3311; }
         .btn-share { flex: 1; background: #FEE500; color: #3C1E1E; border: none; }
 
+        .btn-delete-small { background: #d32f2f; color: white; border: none; border-radius: 4px; padding: 3px 6px; font-size: 11px; cursor: pointer; margin-left: 5px; }
+
         .theme-toggle { text-align: center; margin-top: 20px; padding: 15px; background: #333; color: white; border-radius: 10px; font-weight: bold; cursor: pointer; }
+
+        /* 입력 폼 스타일 */
+        input.form-input, select.form-input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid var(--border); border-radius: 8px; box-sizing: border-box; background-color: var(--card-bg); color: var(--text); font-size:15px; }
     </style>
 </head>
 <body>
 
 <header>
     <h2 style="margin:0; font-size:20px;">전국 파크골프 통합 예약</h2>
-    <p style="margin:5px 0 0; font-size:12px; opacity:0.9;">실시간 예약 및 지역별 60여 개 구장 안내</p>
-    <button class="app-switch-btn" onclick="location.href='index.html'">📝 스코어카드</button>
+    <p style="margin:5px 0 0; font-size:12px; opacity:0.9;">실시간 예약 및 지역별 구장 정보 안내</p>
+    <a href="index.html" class="app-switch-btn">📝 스코어카드</a>
 </header>
 
 <div class="container">
     
-    <div class="info-section">
-        <div class="info-tabs">
-            <div class="info-tab active" onclick="switchInfoTab('news')">📰 파크골프 소식</div>
-            <div class="info-tab" onclick="switchInfoTab('events')">🏆 경기/대회 일정</div>
-        </div>
-        
-        <div id="tab-news" class="info-content active">
-            <ul class="info-list" id="news-list"></ul>
-            <button class="official-link-btn" onclick="window.open('https://www.koreaparkgolf.or.kr/bbs/board.php?bo_table=notice', '_blank')">
-                🌐 대한파크골프협회 공식 공지사항 바로가기
-            </button>
+    <div id="screen-main" class="screen active">
+        <div class="info-section">
+            <div class="info-tabs">
+                <div class="info-tab active" onclick="switchInfoTab('news')">📰 파크골프 소식</div>
+                <div class="info-tab" onclick="switchInfoTab('events')">🏆 경기/대회 일정</div>
+            </div>
+            
+            <div id="tab-news" class="info-content active">
+                <ul class="info-list" id="news-list"></ul>
+                <a href="https://www.koreaparkgolf.or.kr/bbs/board.php?bo_table=notice" class="official-link-btn" target="_blank">
+                    🌐 대한파크골프협회 공지사항 바로가기
+                </a>
+            </div>
+
+            <div id="tab-events" class="info-content">
+                <ul class="info-list" id="event-list"></ul>
+                <a href="https://www.koreaparkgolf.or.kr/bbs/board.php?bo_table=schedule" class="official-link-btn" target="_blank">
+                    🌐 대한파크골프협회 대회일정 바로가기
+                </a>
+            </div>
         </div>
 
-        <div id="tab-events" class="info-content">
-            <ul class="info-list" id="event-list"></ul>
-            <button class="official-link-btn" onclick="window.open('https://www.koreaparkgolf.or.kr/bbs/board.php?bo_table=schedule', '_blank')">
-                🌐 대한파크골프협회 공식 대회일정 바로가기
-            </button>
+        <div class="region-scroll" id="regionTabs">
+            <button class="region-btn active" onclick="filterByRegion('전체', this)">전체</button>
+            <button class="region-btn fav" onclick="filterByRegion('즐겨찾기', this)">⭐ 즐겨찾기</button>
+            <button class="region-btn add-btn" onclick="showAddScreen()">➕ 구장 추가</button>
+            
+            <button class="region-btn" onclick="filterByRegion('서울', this)">서울</button>
+            <button class="region-btn" onclick="filterByRegion('경기/인천', this)">경기/인천</button>
+            <button class="region-btn" onclick="filterByRegion('강원', this)">강원</button>
+            <button class="region-btn" onclick="filterByRegion('충청', this)">충청</button>
+            <button class="region-btn" onclick="filterByRegion('영남', this)">영남</button>
+            <button class="region-btn" onclick="filterByRegion('호남', this)">호남</button>
+            <button class="region-btn" onclick="filterByRegion('기타', this)">제주/기타</button>
+        </div>
+
+        <div class="search-area">
+            <input type="text" id="searchInput" placeholder="구장명 또는 지역 검색 (예: 양평)">
+            <button class="search-btn" onclick="filter()">🔍</button>
+        </div>
+
+        <div id="list"></div>
+
+        <div class="theme-toggle" id="theme-btn" onclick="toggleTheme()">🌙 다크 모드 (배터리 절약)</div>
+    </div>
+
+    <div id="screen-add" class="screen">
+        <div class="card" style="margin-top: 15px;">
+            <h2 style="color: var(--primary); text-align: center; margin-top:0;">➕ 나만의 구장 직접 등록</h2>
+            <p style="text-align: center; font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">
+                동네에 새로 생긴 구장이나, 목록에 없는 구장을 추가하면 전체 목록과 즐겨찾기에서 확인하실 수 있습니다.
+            </p>
+            
+            <select id="add-region" class="form-input">
+                <option value="서울">서울</option>
+                <option value="경기">경기</option>
+                <option value="인천">인천</option>
+                <option value="강원">강원</option>
+                <option value="충남">충남</option>
+                <option value="충북">충북</option>
+                <option value="대전">대전</option>
+                <option value="경남">경남</option>
+                <option value="경북">경북</option>
+                <option value="대구">대구</option>
+                <option value="부산">부산</option>
+                <option value="울산">울산</option>
+                <option value="전남">전남</option>
+                <option value="전북">전북</option>
+                <option value="광주">광주</option>
+                <option value="제주">제주</option>
+            </select>
+            
+            <input type="text" id="add-name" class="form-input" placeholder="파크골프장 이름 (필수입력)">
+            <input type="number" id="add-holes" class="form-input" placeholder="홀 수 (예: 18, 36) - 숫자만 입력">
+            <input type="text" id="add-manager" class="form-input" placeholder="관리기관 (예: XX구청, 시니어클럽 등)">
+            <input type="text" id="add-phone" class="form-input" placeholder="문의 전화번호 (예: 02-123-4567)">
+            <input type="text" id="add-url" class="form-input" placeholder="온라인 예약 사이트 URL 주소 (선택사항)">
+            <input type="text" id="add-address" class="form-input" placeholder="상세 주소 (예: 서울 강동구 암사동)">
+            
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn btn-secondary" onclick="hideAddScreen()" style="flex:1;">취소 및 돌아가기</button>
+                <button class="btn btn-online" onclick="saveCustomPark()" style="flex:1;">💾 내 구장 저장하기</button>
+            </div>
         </div>
     </div>
 
-    <div class="region-scroll" id="regionTabs">
-        <button class="region-btn active" onclick="filterByRegion('전체', this)">전체</button>
-        <button class="region-btn fav" onclick="filterByRegion('즐겨찾기', this)">⭐ 즐겨찾기</button>
-        <button class="region-btn" onclick="filterByRegion('서울', this)">서울</button>
-        <button class="region-btn" onclick="filterByRegion('경기/인천', this)">경기/인천</button>
-        <button class="region-btn" onclick="filterByRegion('강원', this)">강원</button>
-        <button class="region-btn" onclick="filterByRegion('충청', this)">충청</button>
-        <button class="region-btn" onclick="filterByRegion('영남', this)">영남</button>
-        <button class="region-btn" onclick="filterByRegion('호남', this)">호남</button>
-        <button class="region-btn" onclick="filterByRegion('기타', this)">제주/기타</button>
-    </div>
-
-    <div class="search-area">
-        <input type="text" id="searchInput" placeholder="구장명 또는 지역 검색 (예: 양평)">
-        <button class="search-btn" onclick="filter()">🔍</button>
-    </div>
-
-    <div id="list"></div>
-
-    <div class="theme-toggle" id="theme-btn" onclick="toggleTheme()">🌙 다크 모드 (배터리 절약)</div>
 </div>
 
 <script>
     // --- 즐겨찾기 데이터 로드 ---
     let favorites = JSON.parse(localStorage.getItem('pg_reservation_fav') || '[]');
     let currentRegion = '전체';
+
+    // --- 화면 제어 (메인 <-> 구장 추가) ---
+    function showAddScreen() {
+        document.getElementById('screen-main').classList.remove('active');
+        document.getElementById('screen-add').classList.add('active');
+    }
+
+    function hideAddScreen() {
+        document.getElementById('screen-add').classList.remove('active');
+        document.getElementById('screen-main').classList.add('active');
+        // 입력 폼 초기화
+        document.getElementById('add-name').value = '';
+        document.getElementById('add-holes').value = '';
+        document.getElementById('add-manager').value = '';
+        document.getElementById('add-phone').value = '';
+        document.getElementById('add-url').value = '';
+        document.getElementById('add-address').value = '';
+    }
 
     // --- 1. 자동 업데이트 소식 및 일정 생성기 ---
     const regionsDist = ['서울', '경기', '강원', '충청', '영남', '호남', '대구', '부산', '경북', '전남'];
@@ -147,21 +223,27 @@
         const newsHtml = [];
         const eventsHtml = [];
 
+        // [수정] 항목 클릭 시 대한파크골프협회 해당 게시판으로 연결
         for(let i = 0; i < 10; i++) {
-            // 소식은 과거~오늘 기준
             let nd = new Date(today);
             nd.setDate(today.getDate() - i * 2);
             let nDateStr = `${nd.getFullYear()}.${String(nd.getMonth()+1).padStart(2,'0')}.${String(nd.getDate()).padStart(2,'0')}`;
             
-            // 일정은 오늘~미래 기준
             let ed = new Date(today);
             ed.setDate(today.getDate() + (i * 4));
             let eDateStr = `${ed.getFullYear()}.${String(ed.getMonth()+1).padStart(2,'0')}.${String(ed.getDate()).padStart(2,'0')}`;
             
             let reg = regionsDist[i % 10];
             
-            newsHtml.push(`<li><div style="display:flex; align-items:center;"><span class="info-region">${reg}</span> <span>${newsKeywords[i]}</span></div><span class="info-date">${nDateStr}</span></li>`);
-            eventsHtml.push(`<li><div style="display:flex; align-items:center;"><span class="info-region">${reg}</span> <span>제${i+3}회 ${eventKeywords[i]}</span></div><span class="info-date">${eDateStr}</span></li>`);
+            newsHtml.push(`
+                <li onclick="location.href='https://www.koreaparkgolf.or.kr/bbs/board.php?bo_table=notice'">
+                    <div style="display:flex; align-items:center;"><span class="info-region">${reg}</span> <span>${newsKeywords[i]}</span></div><span class="info-date">${nDateStr}</span>
+                </li>`);
+            
+            eventsHtml.push(`
+                <li onclick="location.href='https://www.koreaparkgolf.or.kr/bbs/board.php?bo_table=schedule'">
+                    <div style="display:flex; align-items:center;"><span class="info-region">${reg}</span> <span>제${i+3}회 ${eventKeywords[i]}</span></div><span class="info-date">${eDateStr}</span>
+                </li>`);
         }
 
         document.getElementById('news-list').innerHTML = newsHtml.join('');
@@ -181,7 +263,7 @@
         }
     }
 
-    // --- 2. 60여개 구장 데이터베이스 ---
+    // --- 2. 기본 60여개 구장 데이터베이스 ---
     const parkGolfDB = [
         { r: "서울", n: "강동 파크골프장", h: 9, m: "강동구청", p: "02-3425-5263", u: "https://yeyak.seoul.go.kr", a: "서울 강동구 암사동" },
         { r: "서울", n: "난지 파크골프장", h: 18, m: "서울시 공공예약", p: "02-304-3212", u: "https://yeyak.seoul.go.kr", a: "서울 마포구 상암동" },
@@ -217,9 +299,47 @@
         { r: "부산", n: "삼락 파크골프장", h: 36, m: "부산시 공단", p: "051-310-6000", u: "https://reserve.busan.go.kr", a: "부산 사상구 삼락동" },
         { r: "울산", n: "태화강 파크골프장", h: 18, m: "울산 남구청", p: "010-9566-1849", u: "", a: "울산 남구 신정동" },
         { r: "제주", n: "회천 파크골프장", h: 18, m: "제주시청", p: "064-728-3273", u: "", a: "제주 제주시 회천동" }
-    ].sort((a, b) => a.n.localeCompare(b.n));
+    ];
 
-    // --- 3. 렌더링 및 기능 ---
+    // --- [신규] 커스텀 구장 저장 및 삭제 로직 ---
+    function saveCustomPark() {
+        const r = document.getElementById('add-region').value;
+        const n = document.getElementById('add-name').value.trim();
+        const h = document.getElementById('add-holes').value || "18";
+        const m = document.getElementById('add-manager').value || "자체관리";
+        const p = document.getElementById('add-phone').value || "";
+        const u = document.getElementById('add-url').value || "";
+        const a = document.getElementById('add-address').value || "";
+        
+        if(!n) { alert("구장 이름을 필수로 입력해주세요."); return; }
+        
+        const newPark = { r, n, h, m, p, u, a, isCustom: true };
+        let customDB = JSON.parse(localStorage.getItem('pg_custom_parks') || '[]');
+        customDB.push(newPark);
+        localStorage.setItem('pg_custom_parks', JSON.stringify(customDB));
+        
+        alert(`[${n}] 구장이 내 목록에 추가되었습니다!`);
+        hideAddScreen();
+        filter();
+    }
+
+    function deleteCustomPark(name) {
+        if(confirm(`직접 추가하신 [${name}] 구장을 목록에서 삭제하시겠습니까?`)) {
+            // 커스텀 DB에서 삭제
+            let customDB = JSON.parse(localStorage.getItem('pg_custom_parks') || '[]');
+            customDB = customDB.filter(p => p.n !== name);
+            localStorage.setItem('pg_custom_parks', JSON.stringify(customDB));
+            
+            // 즐겨찾기에서도 지우기
+            if(favorites.includes(name)) {
+                favorites = favorites.filter(f => f !== name);
+                localStorage.setItem('pg_reservation_fav', JSON.stringify(favorites));
+            }
+            filter();
+        }
+    }
+
+    // --- 3. 렌더링 및 필터링 기능 ---
     function render(data) {
         const listDiv = document.getElementById('list');
         listDiv.innerHTML = '';
@@ -231,12 +351,15 @@
 
         data.forEach(item => {
             const isFav = favorites.includes(item.n);
+            const isCustom = item.isCustom;
+            
             const card = document.createElement('div');
             card.className = 'card';
             card.innerHTML = `
                 <div class="card-top">
                     <span class="name">
                         ${isFav ? '<span style="color:#f57f17">⭐</span>' : ''} ${item.n}
+                        ${isCustom ? `<button class="btn-delete-small" onclick="deleteCustomPark('${item.n}')">삭제</button>` : ''}
                     </span>
                     <span class="holes">${item.h}홀</span>
                 </div>
@@ -255,7 +378,7 @@
         });
     }
 
-    // --- [기능 1] 카톡 공유 기능 ---
+    // --- 카톡 공유 기능 ---
     function shareKakao(name, address, url, phone) {
         const textMsg = `⛳ [${name}] 정보 안내\n\n📍 주소: ${address}\n📞 연락처: ${phone}\n🔗 예약링크: ${url || '온라인 예약 미지원(전화문의)'}\n\n전국 파크골프 통합 예약 시스템에서 공유됨`;
         
@@ -269,7 +392,7 @@
         }
     }
 
-    // --- [기능 3] 즐겨찾기 제어 ---
+    // --- 즐겨찾기 제어 ---
     function toggleFavorite(name) {
         if(favorites.includes(name)) {
             favorites = favorites.filter(n => n !== name);
@@ -277,15 +400,15 @@
             favorites.push(name);
         }
         localStorage.setItem('pg_reservation_fav', JSON.stringify(favorites));
-        filter(); // 상태 업데이트 후 재렌더링
+        filter();
     }
 
-    // --- [기능 4] 지역별 필터링 탭 ---
+    // --- 지역별 필터링 탭 ---
     function filterByRegion(region, btnElement) {
         currentRegion = region;
         document.querySelectorAll('.region-btn').forEach(btn => btn.classList.remove('active'));
         btnElement.classList.add('active');
-        document.getElementById('searchInput').value = ''; // 탭 이동 시 검색어 초기화
+        document.getElementById('searchInput').value = '';
         filter();
     }
 
@@ -293,11 +416,13 @@
     function filter() {
         const val = document.getElementById('searchInput').value.toLowerCase();
         
-        let filtered = parkGolfDB.filter(item => {
-            // 1단계: 텍스트 검색 조건
+        // 커스텀 DB와 기본 DB 합치기
+        const customDB = JSON.parse(localStorage.getItem('pg_custom_parks') || '[]');
+        const fullDB = [...parkGolfDB, ...customDB];
+        
+        let filtered = fullDB.filter(item => {
             const matchText = (item.n + item.r + item.a).toLowerCase().includes(val);
             
-            // 2단계: 지역 탭 조건
             let matchRegion = false;
             if(currentRegion === '전체') matchRegion = true;
             else if(currentRegion === '즐겨찾기') matchRegion = favorites.includes(item.n);
@@ -312,11 +437,12 @@
             return matchText && matchRegion;
         });
 
-        // 즐겨찾기된 항목을 목록 최상단으로 정렬
+        // 즐겨찾기된 항목, 그리고 커스텀 항목 등을 정렬
         filtered.sort((a, b) => {
             let aFav = favorites.includes(a.n) ? -1 : 1;
             let bFav = favorites.includes(b.n) ? -1 : 1;
-            return aFav - bFav;
+            if(aFav !== bFav) return aFav - bFav;
+            return a.n.localeCompare(b.n);
         });
 
         render(filtered);
