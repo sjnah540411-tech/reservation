@@ -34,15 +34,18 @@
         .info-content { padding: 15px; display: none; }
         .info-content.active { display: block; }
         .info-list { list-style: none; padding: 0; margin: 0; }
-        /* 리스트 클릭 시 호버 효과 부여 */
-        .info-list li { padding: 8px 0; border-bottom: 1px dashed var(--border); font-size: 13px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .info-list li:active { background-color: rgba(0,0,0,0.05); }
+        
+        /* [수정] a 태그를 활용한 터치 영역 및 링크 안정화 */
+        .info-list li { border-bottom: 1px dashed var(--border); font-size: 13px; }
+        .info-list li a { padding: 12px 0; text-decoration: none; color: inherit; display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .info-list li a:active { background-color: rgba(0,0,0,0.05); }
         .info-list li:last-child { border-bottom: none; }
+        
         .info-region { background: var(--secondary); color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px; margin-right: 5px; }
         .info-date { color: #0277BD; font-weight: bold; font-size: 11px; white-space: nowrap; margin-left: 5px; }
         [data-theme="dark"] .info-date { color: #4fc3f7; }
 
-        /* 공식 링크 버튼 (a 태그로 안정성 강화) */
+        /* 공식 링크 버튼 */
         .official-link-btn { width: 100%; padding: 12px 10px; margin-top: 10px; background: #f0f4f8; color: #0277BD; border: 1px solid #0277BD; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; text-decoration: none; box-sizing: border-box; font-size: 14px; }
         [data-theme="dark"] .official-link-btn { background: #003344; color: #4fc3f7; border-color: #4fc3f7; }
 
@@ -111,15 +114,15 @@
             
             <div id="tab-news" class="info-content active">
                 <ul class="info-list" id="news-list"></ul>
-                <a href="https://www.kpga7330.com/news-library/announcements
-                    🌐 대한파크골프협회 공지사항 바로가기
+                <a href="https://www.kpga7330.com" class="official-link-btn" target="_blank">
+                    🌐 대한파크골프협회 홈페이지 바로가기
                 </a>
             </div>
 
             <div id="tab-events" class="info-content">
                 <ul class="info-list" id="event-list"></ul>
-                <a href="https://www.kpga7330.com/competitions
-                    🌐 대한파크골프협회 대회일정 바로가기
+                <a href="https://www.kpga7330.com" class="official-link-btn" target="_blank">
+                    🌐 대한파크골프협회 홈페이지 바로가기
                 </a>
             </div>
         </div>
@@ -204,7 +207,6 @@
     function hideAddScreen() {
         document.getElementById('screen-add').classList.remove('active');
         document.getElementById('screen-main').classList.add('active');
-        // 입력 폼 초기화
         document.getElementById('add-name').value = '';
         document.getElementById('add-holes').value = '';
         document.getElementById('add-manager').value = '';
@@ -223,7 +225,7 @@
         const newsHtml = [];
         const eventsHtml = [];
 
-        // [수정] 항목 클릭 시 대한파크골프협회 해당 게시판으로 연결
+        // [수정] 리스트 아이템 클릭 시 a 태그를 통해 확실하게 새 창으로 이동
         for(let i = 0; i < 10; i++) {
             let nd = new Date(today);
             nd.setDate(today.getDate() - i * 2);
@@ -236,13 +238,23 @@
             let reg = regionsDist[i % 10];
             
             newsHtml.push(`
-                <li onclick="location.href='https://www.kpga7330.com/news-library/announcements>
-                    <div style="display:flex; align-items:center;"><span class="info-region">${reg}</span> <span>${newsKeywords[i]}</span></div><span class="info-date">${nDateStr}</span>
+                <li>
+                    <a href="https://www.kpga7330.com" target="_blank">
+                        <div style="display:flex; align-items:center;">
+                            <span class="info-region">${reg}</span> <span>${newsKeywords[i]}</span>
+                        </div>
+                        <span class="info-date">${nDateStr}</span>
+                    </a>
                 </li>`);
             
             eventsHtml.push(`
-                <li onclick="location.href='https://www.koreaparkgolf.or.kr/bbs/board.php?bo_table=schedule'">
-                    <div style="display:flex; align-items:center;"><span class="info-region">${reg}</span> <span>제${i+3}회 ${eventKeywords[i]}</span></div><span class="info-date">${eDateStr}</span>
+                <li>
+                    <a href="https://www.kpga7330.com" target="_blank">
+                        <div style="display:flex; align-items:center;">
+                            <span class="info-region">${reg}</span> <span>제${i+3}회 ${eventKeywords[i]}</span>
+                        </div>
+                        <span class="info-date">${eDateStr}</span>
+                    </a>
                 </li>`);
         }
 
@@ -263,7 +275,7 @@
         }
     }
 
-    // --- 2. 기본 60여개 구장 데이터베이스 ---
+    // --- 2. 기본 구장 데이터베이스 ---
     const parkGolfDB = [
         { r: "서울", n: "강동 파크골프장", h: 9, m: "강동구청", p: "02-3425-5263", u: "https://yeyak.seoul.go.kr", a: "서울 강동구 암사동" },
         { r: "서울", n: "난지 파크골프장", h: 18, m: "서울시 공공예약", p: "02-304-3212", u: "https://yeyak.seoul.go.kr", a: "서울 마포구 상암동" },
@@ -301,7 +313,7 @@
         { r: "제주", n: "회천 파크골프장", h: 18, m: "제주시청", p: "064-728-3273", u: "", a: "제주 제주시 회천동" }
     ];
 
-    // --- [신규] 커스텀 구장 저장 및 삭제 로직 ---
+    // --- 커스텀 구장 저장 및 삭제 로직 ---
     function saveCustomPark() {
         const r = document.getElementById('add-region').value;
         const n = document.getElementById('add-name').value.trim();
@@ -325,12 +337,10 @@
 
     function deleteCustomPark(name) {
         if(confirm(`직접 추가하신 [${name}] 구장을 목록에서 삭제하시겠습니까?`)) {
-            // 커스텀 DB에서 삭제
             let customDB = JSON.parse(localStorage.getItem('pg_custom_parks') || '[]');
             customDB = customDB.filter(p => p.n !== name);
             localStorage.setItem('pg_custom_parks', JSON.stringify(customDB));
             
-            // 즐겨찾기에서도 지우기
             if(favorites.includes(name)) {
                 favorites = favorites.filter(f => f !== name);
                 localStorage.setItem('pg_reservation_fav', JSON.stringify(favorites));
@@ -416,7 +426,6 @@
     function filter() {
         const val = document.getElementById('searchInput').value.toLowerCase();
         
-        // 커스텀 DB와 기본 DB 합치기
         const customDB = JSON.parse(localStorage.getItem('pg_custom_parks') || '[]');
         const fullDB = [...parkGolfDB, ...customDB];
         
@@ -437,7 +446,6 @@
             return matchText && matchRegion;
         });
 
-        // 즐겨찾기된 항목, 그리고 커스텀 항목 등을 정렬
         filtered.sort((a, b) => {
             let aFav = favorites.includes(a.n) ? -1 : 1;
             let bFav = favorites.includes(b.n) ? -1 : 1;
