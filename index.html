@@ -14,9 +14,7 @@
         .news-box { background: white; border-radius: 10px; padding: 15px; margin-bottom: 15px; border-left: 5px solid var(--accent); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .news-header { font-weight: bold; font-size: 1.05em; color: #d84315; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
         .news-list { list-style: none; padding: 0; margin: 0; }
-        /* 마우스 커서를 손가락 모양으로 변경 */
         .news-list li { padding: 8px 0; border-bottom: 1px dashed #eee; font-size: 0.95em; display: flex; justify-content: space-between; cursor: pointer; }
-        .news-list li:hover { background-color: #f9f9f9; }
         .news-list li:last-child { border-bottom: none; }
         .news-date { color: #0277BD; font-weight: bold; font-size: 0.85em; }
 
@@ -66,27 +64,23 @@
 </div>
 
 <script>
-    // 1. 공지사항 데이터 및 자동 날짜 로직
-    // [해결 포인트] url 부분에 메인 주소가 아닌 '실제 공지사항 게시판'의 상세 주소를 넣었습니다.
-    // 추후 특정 뉴스 기사로 보내고 싶으시면 'url' 부분의 주소만 그 기사 주소로 바꿔주시면 됩니다.
+    // 1. 공지사항 데이터 (외부 링크 URL 제거)
     const newsData = [
-        { title: "대한파크골프협회 공지사항 (잔디 생육 등)", url: "https://www.kpga7330.com/m/bbs/board.php?bo_table=notice" },
-        { title: "대한파크골프협회 대회일정 및 결과 확인", url: "https://www.kpga7330.com/m/bbs/board.php?bo_table=competition" },
-        { title: "파크골프 지도자 자격증 관련 공지", url: "https://www.kifuture.com/bbs/board.php?bo_table=notice" },
-        { title: "대구 파크골프장 예약 시스템 통합 공지", url: "https://dgpg.daegu.go.kr/" }
+        { title: "전국 파크골프장 잔디 생육에 따른 운영시간 조정" },
+        { title: "제14회 대한체육회장기 대회 참가 접수 안내" },
+        { title: "파크골프 지도자 자격증 실기 시험 일정 확정" },
+        { title: "지자체별 파크골프장 예약 시스템 통합 업데이트" }
     ];
 
     function initNews() {
         const list = document.getElementById('noticeContent');
         const today = new Date().toISOString().slice(0, 10).replace(/-/g, '.');
-        
-        // [해결 포인트] 클릭 시 앱이 꺼지지 않고 새 창(새 탭)에서 뉴스가 열리도록 window.open 사용
+        // 외부 사이트 이동 방지 및 알림창 출력으로 변경
         list.innerHTML = newsData.sort(() => Math.random() - 0.5).slice(0, 3).map(n => `
-            <li onclick="window.open('${n.url}', '_blank');">
+            <li onclick="alert('상세 내용은 앱 내 업데이트 준비 중입니다.');">
                 <span>📌 ${n.title}</span><span class="news-date">${today}</span>
             </li>
         `).join('');
-        
         document.getElementById('lastUpdate').textContent = `최근 업데이트: ${new Date().toLocaleTimeString()} (정상 작동중)`;
     }
 
@@ -142,6 +136,7 @@
         { r: "제주", n: "강창학 파크골프장", h: 18, m: "서귀포시청", p: "064-733-0355", u: "", a: "제주 서귀포시 강정동" }
     ];
 
+    // 정렬 및 초기 렌더링
     parkGolfDB.sort((a, b) => a.n.localeCompare(b.n));
 
     function render(data) {
@@ -166,6 +161,7 @@
         });
     }
 
+    // 3. 기능 함수
     function goTmap(name) {
         window.location.href = `tmap://search?name=${encodeURIComponent(name)}`;
         setTimeout(() => {
@@ -181,6 +177,7 @@
         render(filtered);
     }
 
+    // 검색창 실시간 반영
     document.getElementById('searchInput').oninput = filter;
 
     window.onload = () => {
