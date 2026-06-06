@@ -2,188 +2,345 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>전국 파크골프 통합 예약 시스템</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>전국 파크골프 통합 예약 & 뉴스 시스템</title>
     <style>
         :root { --primary: #2e7d32; --secondary: #4caf50; --bg: #f4f6f8; --accent: #ef6c00; --tmap: #ff5000; }
-        body { font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; margin: 0; background: var(--bg); color: #333; -webkit-tap-highlight-color: transparent; }
-        header { background: var(--primary); color: white; padding: 15px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .container { max-width: 800px; margin: auto; padding: 12px; }
+        body { font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; margin: 0; background: var(--bg); color: #333; }
+        header { background: var(--primary); color: white; padding: 20px 15px; text-align: center; }
+        .container { max-width: 800px; margin: auto; padding: 15px; }
 
-        /* 뉴스/공지 */
-        .news-box { background: white; border-radius: 10px; padding: 15px; margin-bottom: 15px; border-left: 5px solid var(--accent); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .news-header { font-weight: bold; font-size: 1.05em; color: #d84315; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
+        /* 공지사항 */
+        .news-box { background: white; border: 1px solid #c8e6c9; border-left: 6px solid var(--accent); padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .news-header { font-weight: bold; font-size: 1.1em; color: #d84315; margin-bottom: 15px; border-bottom: 2px solid #fbe9e7; padding-bottom: 10px; }
         .news-list { list-style: none; padding: 0; margin: 0; }
-        .news-list li { padding: 8px 0; border-bottom: 1px dashed #eee; font-size: 0.95em; display: flex; justify-content: space-between; cursor: pointer; }
-        .news-list li:last-child { border-bottom: none; }
-        .news-date { color: #0277BD; font-weight: bold; font-size: 0.85em; }
+        .news-list li { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed #eee; }
+        .news-list li:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+        .news-link { text-decoration: none; color: #333; display: flex; justify-content: space-between; align-items: flex-start; }
+        .news-link:hover { color: var(--primary); font-weight: bold; }
+        .news-text { flex: 1; line-height: 1.4; word-break: keep-all; }
+        .news-date { font-size: 12px; color: #0277BD; margin-left: 10px; white-space: nowrap; font-weight: bold; }
+        .update-time { font-size: 12px; color: #888; text-align: right; margin-top: 15px; }
 
-        /* 검색창 고정 */
-        .search-area { display: flex; margin-bottom: 15px; position: sticky; top: 0px; z-index: 100; }
-        #searchInput { flex: 1; padding: 14px; border: 2px solid var(--primary); border-radius: 8px 0 0 8px; font-size: 1.05em; outline: none; }
-        .search-btn { background: var(--primary); color: white; border: none; border-radius: 0 8px 8px 0; width: 60px; font-size: 1.2em; cursor: pointer; }
+        /* 검색창 */
+        .search-area { display: flex; margin-bottom: 20px; position: sticky; top: 10px; z-index: 10; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-radius: 8px; }
+        #searchInput { flex: 1; padding: 15px; border: 2px solid var(--primary); border-radius: 8px 0 0 8px; font-size: 1.1em; border-right: none; outline: none; }
+        .search-btn { background: var(--primary); color: white; border: 2px solid var(--primary); border-radius: 0 8px 8px 0; padding: 0 20px; font-size: 1.5em; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+        .search-btn:hover { background: #1b5e20; }
 
         /* 구장 카드 */
-        .card { background: white; border-radius: 10px; padding: 15px; margin-bottom: 12px; border: 1px solid #e0e0e0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .name { font-size: 1.15em; font-weight: bold; color: var(--primary); }
-        .holes { background: var(--secondary); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; }
-        .info { font-size: 0.9em; color: #666; line-height: 1.5; margin-bottom: 10px; }
-        
-        /* 버튼 그룹 */
-        .btn-group { display: flex; gap: 5px; }
-        .btn { flex: 1; padding: 12px 5px; text-align: center; border-radius: 6px; font-weight: bold; font-size: 0.85em; border: none; cursor: pointer; text-decoration: none; display: inline-block; }
-        .btn-online { background: var(--primary); color: white; }
-        .btn-tmap { background: var(--tmap); color: white; }
-        .btn-phone { background: #fff; color: var(--primary); border: 1px solid var(--primary); }
-        .btn-disabled { background: #eee; color: #999; cursor: default; }
+        .card { background: white; border-radius: 10px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #e0e0e0; }
+        .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .name { font-size: 1.3em; font-weight: bold; color: var(--primary); }
+        .holes { background: var(--secondary); color: white; padding: 3px 10px; border-radius: 15px; font-size: 0.9em; }
+        .info { font-size: 0.95em; line-height: 1.8; color: #444; }
+        .manager-tag { color: #c62828; font-weight: bold; background: #ffebee; padding: 2px 6px; border-radius: 4px; }
 
-        .update-tag { font-size: 10px; color: #999; text-align: right; margin-top: 5px; }
+        /* 버튼 */
+        .btn-group { display: flex; gap: 8px; margin-top: 10px; }
+        .btn { flex: 1; padding: 12px; text-align: center; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 0.95em; cursor: pointer; border: none; }
+        .btn-online { background: var(--primary); color: white; }
+        .btn-copy { background: #757575; color: white; max-width: 85px; }
+        .btn-phone { background: white; color: var(--primary); border: 1px solid var(--primary); }
+        /* TMAP 전용 버튼 */
+        .btn-tmap { background: var(--tmap); color: white; }
+        .btn-disabled { background: #e0e0e0; color: #757575; cursor: default; }
+
+        /* 모달 공통 */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); z-index: 1000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: white; width: 100%; max-width: 420px; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .modal-title { font-size: 1.2em; font-weight: bold; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        #alertModal .modal-title { color: #d32f2f; }
+        #copySuccessModal .modal-title { color: #2e7d32; }
+        .modal-body { font-size: 0.95em; color: #333; line-height: 1.6; margin-bottom: 25px; word-break: keep-all; }
+        .modal-body .highlight { background: #fff9c4; font-weight: bold; color: #c62828; padding: 2px 4px; border-radius: 3px; }
+        .modal-btns { display: flex; flex-direction: column; gap: 12px; }
+        .m-btn { padding: 15px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1em; text-align: left; padding-left: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .m-btn-direct { background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; }
+        .m-btn-copy { background: var(--primary); color: white; }
+        #copySuccessModal .m-btn-copy { text-align: center; }
+        .m-btn-close { background: white; color: #555; border: 1px solid #ccc; text-align: center; margin-top: 5px; box-shadow: none; }
     </style>
 </head>
 <body>
 
 <header>
-    <h2 style="margin:0; font-size:1.2em;">전국 파크골프 통합 예약</h2>
-    <p style="margin:5px 0 0; font-size:0.8em; opacity:0.8;">실시간 뉴스 및 전국 60여 개 구장 정보</p>
+    <h1>전국 파크골프 통합 예약센터</h1>
+    <p style="margin-top:5px; font-size:0.9em; opacity:0.9;">전국 주요 60개 구장 예약 및 최신 소식</p>
 </header>
 
 <div class="container">
     <div class="news-box">
-        <div class="news-header">📢 최신 보도 및 공지</div>
+        <div class="news-header">📢 파크골프 최신 보도 및 공지사항</div>
         <ul class="news-list" id="noticeContent"></ul>
-        <div class="update-tag" id="lastUpdate"></div>
+        <div class="update-time" id="lastUpdate"></div>
     </div>
 
     <div class="search-area">
-        <input type="text" id="searchInput" placeholder="구장명 또는 지역(대구, 양평 등) 검색">
-        <button class="search-btn" onclick="filter()">🔍</button>
+        <input type="text" id="searchInput" placeholder="구장명 또는 지역명(대구, 양평 등) 입력">
+        <button class="search-btn" id="searchBtn" title="검색">🔍</button>
     </div>
 
     <div id="list"></div>
 </div>
 
+<div id="alertModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-title">🚨 접속 전 꼭 읽어주세요!</div>
+        <div class="modal-body">
+            <b style="color:#c62828;">예약 사이트 접속 시 아래 두 가지 현상이 나타날 수 있습니다. 모두 정상이며 예약에는 문제가 없습니다.</b>
+            <div style="margin-top:12px; background:#fff3e0; border-left:4px solid #ef6c00; border-radius:6px; padding:10px 12px;">
+                <b>📋 현상 1 — 화면 하단 검은색 Console 창</b><br>
+                <span style="font-size:0.9em;">영문으로 <span class="highlight">"A parser-blocking, cross site script..."</span> 라는 노란 경고문이 나타납니다.<br>
+                → 이는 서울시 사이트의 <b>광고 프로그램 문제</b>로, 예약 기능과 무관한 단순 브라우저 경고입니다.<br>
+                → 화면 하단의 Console 창을 <b>아래로 쓸어내리거나</b>, 창 상단의 <b>— 버튼</b>을 눌러 닫으세요.</span>
+            </div>
+            <div style="margin-top:10px; background:#e8f5e9; border-left:4px solid #2e7d32; border-radius:6px; padding:10px 12px;">
+                <b>📋 현상 2 — 검은색 팝업창</b><br>
+                <span style="font-size:0.9em;">예약 사이트 위에 검은색 창이 덮이는 경우가 있습니다.<br>
+                → 창 <b>우측 상단 X 버튼</b>을 누르거나 창 바깥 부분을 터치하면 닫힙니다.</span>
+            </div>
+        </div>
+        <div class="modal-btns">
+            <button class="m-btn m-btn-direct" id="modalBtnGo">➡️ <b>[방법 1] 바로 접속하기</b><br><span style="font-size:0.85em; font-weight:normal; display:block; margin-top:3px;">※ 위 안내대로 Console 창과 팝업창을 닫으면 정상 이용 가능합니다.</span></button>
+            <button class="m-btn m-btn-copy" id="modalBtnCopy">🔗 <b>[방법 2] 주소 복사 후 직접 접속 (권장)</b><br><span style="font-size:0.85em; font-weight:normal; display:block; margin-top:3px;">※ Console 창이 안 나타나는 경우가 많습니다. 주소 복사 후 브라우저 주소창에 붙여넣어 접속하세요.</span></button>
+            <button class="m-btn m-btn-close" id="modalBtnClose">취소 및 닫기</button>
+        </div>
+    </div>
+</div>
+
+<div id="copySuccessModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-title">✅ 주소 복사 완료</div>
+        <div class="modal-body" style="text-align:center;">
+            예약 사이트 주소가 클립보드에 안전하게 복사되었습니다.<br><br>
+            아래 버튼을 누르면 <b>새 인터넷 검색창(구글)</b>이 열립니다.<br>
+            화면 맨 위 <b>주소창을 길게 눌러 '붙여넣기'</b> 하신 후 접속해 주세요.
+        </div>
+        <div class="modal-btns">
+            <button class="m-btn m-btn-copy" id="copyModalBtnGo">🌐 새 인터넷 창 열기</button>
+            <button class="m-btn m-btn-close" id="copyModalBtnClose">닫기</button>
+        </div>
+    </div>
+</div>
+
 <script>
-    // 1. 공지사항 데이터 (외부 링크 URL 제거)
-    const newsData = [
-        { title: "전국 파크골프장 잔디 생육에 따른 운영시간 조정" },
-        { title: "제14회 대한체육회장기 대회 참가 접수 안내" },
-        { title: "파크골프 지도자 자격증 실기 시험 일정 확정" },
-        { title: "지자체별 파크골프장 예약 시스템 통합 업데이트" }
+    function showModal(id) { document.getElementById(id).classList.add('active'); }
+    function hideModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    const notices = [
+        { title: "[개장] 의왕시 금천천파크골프장 시설 개선 후 21일 재개장", date: "2026.04.17", url: "https://www.kifuture.com/news/article.html?no=171392" },
+        { title: "[대회] 제14회 대한체육회장기 전국 파크골프대회 4.28 개최 안내", date: "2026.04.08", url: "https://www.kpga7330.com" },
+        { title: "[대회] 2026 MTN 전국파크골프 시리즈 화순대회 4월 개최 확정", date: "2026.03.20", url: "https://mobile.newsis.com/view/NISX20260320_0003556890" },
+        { title: "[공지] 대구 파크골프 예약시스템 매주 화요일 08:00 오픈으로 변경", date: "2026.01.27", url: "https://dgpg.daegu.go.kr" }
     ];
 
-    function initNews() {
-        const list = document.getElementById('noticeContent');
-        const today = new Date().toISOString().slice(0, 10).replace(/-/g, '.');
-        // 외부 사이트 이동 방지 및 알림창 출력으로 변경
-        list.innerHTML = newsData.sort(() => Math.random() - 0.5).slice(0, 3).map(n => `
-            <li onclick="alert('상세 내용은 앱 내 업데이트 준비 중입니다.');">
-                <span>📌 ${n.title}</span><span class="news-date">${today}</span>
-            </li>
-        `).join('');
-        document.getElementById('lastUpdate').textContent = `최근 업데이트: ${new Date().toLocaleTimeString()} (정상 작동중)`;
+    function loadNotices() {
+        const sorted = [...notices].sort((a, b) => (a.date > b.date ? -1 : 1));
+        const fragment = document.createDocumentFragment();
+        sorted.forEach(notice => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <a href="${notice.url}" target="_blank" rel="noopener noreferrer" class="news-link">
+                    <span class="news-text">📌 ${notice.title}</span>
+                    <span class="news-date">${notice.date}</span>
+                </a>`;
+            fragment.appendChild(li);
+        });
+        document.getElementById('noticeContent').appendChild(fragment);
+        const updateHour = new Date().getHours() < 12 ? "09:00" : "21:00";
+        document.getElementById('lastUpdate').textContent = `최근 업데이트: 오늘 ${updateHour}`;
     }
 
-    // 2. 60여개 전체 구장 데이터 (가나다순 배치)
     const parkGolfDB = [
-        { r: "서울", n: "강동 파크골프장", h: 9, m: "강동구청", p: "02-3425-5263", u: "https://yeyak.seoul.go.kr", a: "서울 강동구 암사동" },
-        { r: "서울", n: "난지 파크골프장", h: 18, m: "서울시 공공예약", p: "02-304-3212", u: "https://yeyak.seoul.go.kr", a: "서울 마포구 상암동" },
-        { r: "서울", n: "안양천 파크골프장", h: 18, m: "양천구청", p: "02-2620-3114", u: "https://yeyak.seoul.go.kr", a: "서울 양천구 신정동" },
-        { r: "서울", n: "양평누리 파크골프장", h: 18, m: "영등포구 체육회", p: "010-7389-2988", u: "https://srent.y-sisul.or.kr/", a: "서울 영등포구 양화동" },
-        { r: "서울", n: "월드컵 파크골프장", h: 18, m: "서부공원센터", p: "02-304-3212", u: "https://yeyak.seoul.go.kr", a: "서울 마포구 상암동" },
-        { r: "서울", n: "잠실 파크골프장", h: 9, m: "서울체육시설", p: "02-2240-8800", u: "https://yeyak.seoul.go.kr", a: "서울 송파구 잠실동" },
-        { r: "서울", n: "탄천 파크골프장", h: 27, m: "강남구 공단", p: "02-2176-0800", u: "https://yeyak.seoul.go.kr", a: "서울 강남구 세곡동" },
-        { r: "경기", n: "가평 파크골프장", h: 36, m: "가평군 공단", p: "031-8078-8075", u: "https://www.gpfmc.or.kr", a: "경기 가평군 청평면" },
-        { r: "경기", n: "구리 파크골프장", h: 18, m: "구리도시공사", p: "031-550-3700", u: "https://www.guri.go.kr", a: "경기 구리시 토평동" },
-        { r: "경기", n: "남양주 파크골프장", h: 18, m: "남양주 체육회", p: "031-590-2114", u: "", a: "경기 남양주시 이패동" },
-        { r: "경기", n: "부천 파크골프장", h: 18, m: "부천도시공사", p: "032-340-5300", u: "https://www.best.or.kr", a: "경기 부천시 옥길동" },
-        { r: "경기", n: "성남 탄천파크골프장", h: 18, m: "성남도시공사", p: "031-725-7100", u: "https://www.isdc.or.kr", a: "경기 성남시 야탑동" },
-        { r: "경기", n: "안산 신길파크골프장", h: 18, m: "안산도시공사", p: "031-481-2000", u: "https://www.ansan.go.kr", a: "경기 안산시 단원구" },
-        { r: "경기", n: "양평 파크골프장(1,2)", h: 81, m: "양평군청", p: "031-773-3052", u: "https://share.gg.go.kr", a: "경기 양평군 강상면" },
-        { r: "경기", n: "이천 파크골프장", h: 18, m: "이천시 체육회", p: "031-644-2000", u: "", a: "경기 이천시 신둔면" },
-        { r: "인천", n: "청라 파크골프장", h: 18, m: "인천시설공단", p: "032-456-2700", u: "https://reserve.insiseol.or.kr", a: "인천 서구 청라동" },
-        { r: "인천", n: "송도 파크골프장", h: 18, m: "인천시설공단", p: "032-456-2878", u: "https://reserve.insiseol.or.kr", a: "인천 연수구 송도동" },
-        { r: "대구", n: "강창 파크골프장", h: 18, m: "대구시설공단", p: "053-354-7330", u: "https://dgpg.daegu.go.kr", a: "대구 달서구 강창동" },
-        { r: "대구", n: "검단 파크골프장", h: 27, m: "대구시설공단", p: "053-354-7330", u: "https://dgpg.daegu.go.kr", a: "대구 북구 검단동" },
-        { r: "대구", n: "금호 파크골프장", h: 36, m: "대구시설공단", p: "053-354-7330", u: "https://dgpg.daegu.go.kr", a: "대구 북구 금호동" },
-        { r: "대구", n: "도동 파크골프장", h: 18, m: "동구청", p: "053-982-8322", u: "https://dgpg.daegu.go.kr", a: "대구 동구 도동" },
-        { r: "대구", n: "동촌 파크골프장", h: 18, m: "동구청", p: "053-982-8322", u: "https://dgpg.daegu.go.kr", a: "대구 동구 검사동" },
-        { r: "대구", n: "무태 파크골프장", h: 18, m: "북구청", p: "053-665-2000", u: "https://dgpg.daegu.go.kr", a: "대구 북구 서변동" },
-        { r: "대구", n: "불로 파크골프장", h: 27, m: "동구청", p: "053-982-8322", u: "https://dgpg.daegu.go.kr", a: "대구 동구 불로동" },
-        { r: "대구", n: "수성 파크골프장", h: 18, m: "수성구청", p: "053-666-2181", u: "https://dgpg.daegu.go.kr", a: "대구 수성구 가천동" },
-        { r: "강원", n: "춘천 파크골프장", h: 18, m: "춘천도시공사", p: "033-240-1500", u: "https://www.cuc.or.kr", a: "강원 춘천시 사농동" },
-        { r: "강원", n: "화천 산천어(1,2)", h: 36, m: "화천군청", p: "033-441-0797", u: "https://hspg.ihc.go.kr", a: "강원 화천군 하남면" },
-        { r: "강원", n: "원주 파크골프장", h: 18, m: "원주시청", p: "033-737-2114", u: "", a: "강원 원주시 태장동" },
-        { r: "충남", n: "부여 파크골프장", h: 54, m: "부여군청", p: "041-830-2228", u: "", a: "충남 부여군 부여읍" },
-        { r: "충남", n: "청양 백세파크골프장", h: 36, m: "청양군청", p: "041-940-2114", u: "", a: "충남 청양군 청양읍" },
-        { r: "충북", n: "충주 목행파크골프장", h: 18, m: "충주시청", p: "043-853-6733", u: "", a: "충북 충주시 목행동" },
-        { r: "전북", n: "전주 파크골프장", h: 18, m: "전주도시공사", p: "063-239-2500", u: "https://www.jjss.or.kr", a: "전북 전주시 덕진구" },
-        { r: "전남", n: "화순 파크골프장", h: 87, m: "화순군 체육회", p: "061-375-8947", u: "", a: "전남 화순군 청풍면" },
-        { r: "전남", n: "광양 파크골프장", h: 18, m: "광양시청", p: "061-797-2114", u: "", a: "전남 광양시 마동" },
-        { r: "광주", n: "서봉 파크골프장", h: 36, m: "광산구 공단", p: "062-960-9927", u: "https://www.gsfmc.or.kr", a: "광주 광산구 서봉동" },
-        { r: "광주", n: "효령 파크골프장", h: 18, m: "북구청", p: "062-410-8114", u: "https://bukgu.gwangju.kr", a: "광주 북구 효령동" },
-        { r: "경북", n: "구미 동락파크골프장", h: 36, m: "구미시청", p: "054-480-4918", u: "", a: "경북 구미시 진평동" },
-        { r: "경북", n: "포항 곡강파크골프장", h: 36, m: "포항시 공단", p: "054-280-9515", u: "https://www.phsisul.org", a: "경북 포항시 흥해읍" },
-        { r: "경북", n: "경주 파크골프장", h: 18, m: "경주시청", p: "054-779-6114", u: "", a: "경북 경주시 황성동" },
-        { r: "경남", n: "밀양 파크골프장", h: 45, m: "밀양시 공단", p: "055-359-4600", u: "", a: "경남 밀양시 삼문동" },
-        { r: "경남", n: "창원 대산파크골프장", h: 72, m: "창원시청", p: "055-225-2114", u: "https://www.changwon.go.kr", a: "경남 창원시 대산면" },
-        { r: "경남", n: "김해 마사파크골프장", h: 18, m: "김해시 공사", p: "055-330-3114", u: "", a: "경남 김해시 생림면" },
-        { r: "부산", n: "삼락 파크골프장", h: 36, m: "부산시 공단", p: "051-310-6000", u: "https://reserve.busan.go.kr", a: "부산 사상구 삼락동" },
-        { r: "부산", n: "화명 파크골프장", h: 18, m: "부산시 공단", p: "051-310-6000", u: "https://reserve.busan.go.kr", a: "부산 북구 화명동" },
-        { r: "부산", n: "대저 파크골프장", h: 18, m: "강서구청", p: "051-970-4000", u: "https://reserve.busan.go.kr", a: "부산 강서구 대저동" },
-        { r: "울산", n: "태화강 파크골프장", h: 18, m: "울산 남구청", p: "010-9566-1849", u: "", a: "울산 남구 신정동" },
-        { r: "제주", n: "회천 파크골프장", h: 18, m: "제주시청", p: "064-728-3273", u: "", a: "제주 제주시 회천동" },
-        { r: "제주", n: "강창학 파크골프장", h: 18, m: "서귀포시청", p: "064-733-0355", u: "", a: "제주 서귀포시 강정동" }
+        { region: "서울", name: "월드컵공원 파크골프장", holes: 18, manager: "서부공원여가센터", phone: "02-304-3212", res_url: "https://yeyak.seoul.go.kr", addr: "서울 마포구 상암동 481-6" },
+        { region: "서울", name: "안양천 파크골프장", holes: 18, manager: "서울 공공서비스예약", phone: "02-2620-3114", res_url: "https://yeyak.seoul.go.kr", addr: "서울 양천구 목동 900-10" },
+        { region: "서울", name: "탄천 파크골프장", holes: 27, manager: "강남구 도시관리공단", phone: "02-2176-0800", res_url: "https://yeyak.seoul.go.kr", addr: "서울 강남구 세곡동 1-3" },
+        { region: "서울", name: "양평누리 파크골프장", holes: 18, manager: "영등포구 체육회", phone: "010-7389-2988", res_url: "https://srent.y-sisul.or.kr/", addr: "서울 영등포구 양화동 4-1" },
+        { region: "경기", name: "가평 파크골프장", holes: 36, manager: "가평군 시설관리공단", phone: "031-8078-8075", res_url: "https://www.gpfmc.or.kr", addr: "경기 가평군 청평면 대성리 388-13" },
+        { region: "경기", name: "양평 파크골프장 1구장", holes: 36, manager: "양평군청 체육과", phone: "031-773-3052", res_url: "https://share.gg.go.kr", addr: "경기 양평군 강상면 교평리 419" },
+        { region: "경기", name: "나리공원 파크골프장", holes: 18, manager: "양주시 도시공사", phone: "031-828-9700", res_url: "https://www.yjcs.or.kr", addr: "경기 양주시 광사동 731" },
+        { region: "경기", name: "심학산 파크골프장", holes: 18, manager: "파주시 시설관리공단", phone: "031-940-4114", res_url: "", addr: "경기 파주시 동패동 2112" },
+        { region: "경기", name: "안산 신길파크골프장", holes: 18, manager: "안산시 도시공사", phone: "031-481-2000", res_url: "https://www.ansan.go.kr", addr: "경기 안산시 단원구 신길동 산45-1" },
+        { region: "경기", name: "회천 파크골프장", holes: 36, manager: "양주시 도시공사", phone: "031-828-9700", res_url: "https://www.yjcs.or.kr", addr: "경기 양주시 덕계동 일원" },
+        { region: "경기", name: "미사리 파크골프장", holes: 18, manager: "하남시 체육진흥과", phone: "031-790-6114", res_url: "", addr: "경기 하남시 미사리 나무고아원" },
+        { region: "인천", name: "송도 파크골프장", holes: 18, manager: "인천시설공단", phone: "032-456-2878", res_url: "https://reserve.insiseol.or.kr", addr: "인천 연수구 송도동 1" },
+        { region: "강원", name: "강릉 파크골프장", holes: 18, manager: "강릉시 체육과", phone: "033-640-5114", res_url: "", addr: "강원 강릉시 입암동 572-3" },
+        { region: "강원", name: "고성군 파크골프장", holes: 18, manager: "고성군 문화체육과", phone: "033-680-3114", res_url: "", addr: "강원 고성군 토성면 도원리 115-27" },
+        { region: "강원", name: "녹송 파크골프장", holes: 18, manager: "정선군 파크골프협회", phone: "033-560-2950", res_url: "", addr: "강원 정선군 정선읍 봉양리 37-3" },
+        { region: "강원", name: "대화 파크골프장", holes: 18, manager: "평창군 파크골프협회", phone: "010-5361-4994", res_url: "", addr: "강원 평창군 대화면 하원동길 25" },
+        { region: "강원", name: "봉평 파크골프장", holes: 18, manager: "평창군 교육체육과", phone: "033-330-2114", res_url: "", addr: "강원 평창군 봉평면 기운동길 12" },
+        { region: "강원", name: "북평 파크골프장", holes: 18, manager: "정선군 파크골프협회", phone: "033-560-2950", res_url: "", addr: "강원 정선군 북평면 북평리 149-1" },
+        { region: "강원", name: "속초시 파크골프장", holes: 18, manager: "속초시 시설관리공단", phone: "033-639-2114", res_url: "", addr: "강원 속초시 관광로 363번길 92" },
+        { region: "강원", name: "양양 송이조각공원 파크골프장", holes: 45, manager: "양양군 파크골프협회", phone: "033-670-2628", res_url: "", addr: "강원 양양군 양양읍 송암리 540" },
+        { region: "강원", name: "청일 파크골프장", holes: 18, manager: "횡성군 파크골프협회", phone: "033-340-2114", res_url: "", addr: "강원 횡성군 청일면 유평리 613-1" },
+        { region: "강원", name: "태백 파크골프장", holes: 18, manager: "태백시 스포츠레저과", phone: "033-550-2114", res_url: "", addr: "강원 태백시 백두대간로 179" },
+        { region: "강원", name: "평창 파크골프장", holes: 18, manager: "평창군 파크골프협회", phone: "033-330-2114", res_url: "", addr: "강원 평창군 평창읍 제방길 101" },
+        { region: "강원", name: "한반도섬 파크골프장", holes: 27, manager: "양구군 파크골프협회", phone: "033-480-2114", res_url: "", addr: "강원 양구군 양구읍 파라호로 855번길" },
+        { region: "강원", name: "홍천 강변 파크골프장", holes: 18, manager: "홍천군 체육진흥과", phone: "033-430-2114", res_url: "", addr: "강원 홍천군 홍천읍 갈마곡리 267-10" },
+        { region: "강원", name: "화천 산천어 파크골프장 1구장", holes: 18, manager: "화천군 체육과", phone: "033-441-0797", res_url: "https://hspg.ihc.go.kr", addr: "강원 화천군 하남면 춘화로 3061-17" },
+        { region: "강원", name: "화천 산천어 파크골프장 2구장", holes: 18, manager: "화천군 체육과", phone: "070-8672-0796", res_url: "https://hspg.ihc.go.kr", addr: "강원 화천군 하남면 춘화로 3061-17" },
+        { region: "강원", name: "화천 생활체육공원 파크골프장", holes: 18, manager: "화천군 시설관리사업소", phone: "033-441-0790", res_url: "https://hspg.ihc.go.kr", addr: "강원 화천군 하남면 춘화로 3225-56" },
+        { region: "강원", name: "횡성 파크골프장", holes: 18, manager: "횡성군 파크골프협회", phone: "010-2226-6459", res_url: "", addr: "강원 횡성군 횡성읍 앞들동2로 45-19" },
+        { region: "대전", name: "갑천 파크골프장", holes: 18, manager: "유성구청", phone: "010-4470-3250", res_url: "", addr: "대전 유성구 탑립동 226" },
+        { region: "세종", name: "부강 파크골프장", holes: 16, manager: "세종시 시설관리사업소", phone: "044-301-3332", res_url: "https://www.sejong.go.kr", addr: "세종 부강면 금호리 82" },
+        { region: "충북", name: "충주 목행 파크골프장", holes: 18, manager: "충주시 파크골프협회", phone: "043-853-6733", res_url: "", addr: "충북 충주시 목행동 749-3" },
+        { region: "충남", name: "백세 파크골프장", holes: 36, manager: "청양군 파크골프협회", phone: "041-940-2114", res_url: "", addr: "충남 청양군 청양읍 은천동길 16-6" },
+        { region: "충남", name: "보령 파크골프구장", holes: 18, manager: "보령시 체육시설사업소", phone: "041-930-3114", res_url: "", addr: "충남 보령시 웅천읍 오천리 534-1" },
+        { region: "충남", name: "부여 파크골프장", holes: 54, manager: "부여군 파크골프협회", phone: "041-830-2228", res_url: "", addr: "충남 부여군 부여읍 구교리 282-1" },
+        { region: "전북", name: "부귀 파크골프장", holes: 18, manager: "진안군 체육회", phone: "063-430-2375", res_url: "", addr: "전북 진안군 부귀면 귀상로 652-41" },
+        { region: "전북", name: "비봉 파크골프장", holes: 18, manager: "완주군 파크골프협회", phone: "063-290-2114", res_url: "", addr: "전북 완주군 비봉면 소농리 454" },
+        { region: "전북", name: "신태인 파크골프장", holes: 36, manager: "정읍시 파크골프협회", phone: "063-563-6172", res_url: "", addr: "전북 정읍시 신태인읍 일원" },
+        { region: "광주", name: "북구 파크골프장", holes: 18, manager: "광주 북구청 종합운동장", phone: "062-410-8114", res_url: "https://bukgu.gwangju.kr", addr: "광주 북구 연제동 730" },
+        { region: "광주", name: "서봉 파크골프장", holes: 36, manager: "광산구 시설관리공단", phone: "062-960-9927", res_url: "https://www.gsfmc.or.kr", addr: "광주 광산구 서봉동 205-6" },
+        { region: "전남", name: "목포 부주산 국제파크골프장", holes: 18, manager: "목포시 파크골프협회", phone: "061-284-2035", res_url: "", addr: "전남 목포시 옥암동 285-3" },
+        { region: "전남", name: "화순 파크골프장", holes: 87, manager: "화순군 체육회", phone: "061-375-8947", res_url: "", addr: "전남 화순군 청풍면 풍암리 93-9" },
+        { region: "대구", name: "검단 파크골프장", holes: 27, manager: "대구시설공단", phone: "053-354-7330", res_url: "https://dgpg.daegu.go.kr", addr: "대구 북구 검단동 277" },
+        { region: "대구", name: "금호 파크골프장", holes: 36, manager: "대구시설공단", phone: "053-354-7330", res_url: "https://dgpg.daegu.go.kr", addr: "대구 북구 금호동 393-2" },
+        { region: "대구", name: "무태 파크골프장", holes: 18, manager: "대구 북구청", phone: "053-665-2000", res_url: "https://dgpg.daegu.go.kr", addr: "대구 북구 서변동 1630-1" },
+        { region: "대구", name: "불로 파크골프장", holes: 27, manager: "대구 동구청", phone: "053-982-8322", res_url: "https://dgpg.daegu.go.kr", addr: "대구 동구 불로동 866-2" },
+        { region: "경북", name: "곡강 파크골프장", holes: 36, manager: "포항시 시설관리공단", phone: "054-280-9515", res_url: "https://www.phsisul.org", addr: "경북 포항시 북구 흥해읍 용전리 965" },
+        { region: "경북", name: "구미 동락 파크골프장", holes: 36, manager: "구미시 체육시설사업소", phone: "054-480-4918", res_url: "", addr: "경북 구미시 진평동 880" },
+        { region: "경북", name: "병곡 파크골프장", holes: 36, manager: "영덕군 파크골프협회", phone: "010-2815-1110", res_url: "", addr: "경북 영덕군 병곡면 송천리 434-1" },
+        { region: "경북", name: "봉화 파크골프장", holes: 18, manager: "봉화군 파크골프협회", phone: "054-679-6114", res_url: "", addr: "경북 봉화군 봉화읍 내성리 둔치" },
+        { region: "경북", name: "북삼 파크골프장", holes: 18, manager: "칠곡군 시설관리사업소", phone: "054-979-6114", res_url: "", addr: "경북 칠곡군 북삼읍 어로리 743-1" },
+        { region: "경북", name: "성주 피닉스 파크골프장", holes: 36, manager: "성주군 체육시설사업소", phone: "054-930-6114", res_url: "", addr: "경북 성주군 성주읍 금산리 27-19" },
+        { region: "부산", name: "범방 파크골프장", holes: 18, manager: "부산광역시 통합예약", phone: "051-970-4122", res_url: "https://reserve.busan.go.kr", addr: "부산 강서구 범방동 1998" },
+        { region: "울산", name: "대공원 파크골프장", holes: 18, manager: "울산시설공단", phone: "010-3473-2285", res_url: "", addr: "울산 남구 공업탑로타리 근처" },
+        { region: "울산", name: "태화강 파크골프장", holes: 18, manager: "울산 남구 체육회", phone: "010-9566-1849", res_url: "", addr: "울산 남구 신정동 391" },
+        { region: "경남", name: "거창 파크골프장", holes: 36, manager: "거창군 체육시설사업소", phone: "055-940-3114", res_url: "", addr: "경남 거창군 거창읍 양평리 1126" },
+        { region: "경남", name: "마사 파크골프장", holes: 18, manager: "김해시 도시개발공사", phone: "055-330-3114", res_url: "", addr: "경남 김해시 생림면 마사리 915-7" },
+        { region: "경남", name: "밀양 파크골프장", holes: 45, manager: "밀양시 시설관리공단", phone: "055-359-4600", res_url: "", addr: "경남 밀양시 삼문동 643" },
+        { region: "제주", name: "강창학 파크골프장", holes: 18, manager: "서귀포시 체육진흥과", phone: "064-733-0355", res_url: "", addr: "제주 서귀포시 강정동 1353" },
+        { region: "제주", name: "칠십리 파크골프장", holes: 18, manager: "서귀포시 체육진흥과", phone: "064-760-3263", res_url: "", addr: "제주 서귀포시 서홍동 663-2" }
     ];
 
-    // 정렬 및 초기 렌더링
-    parkGolfDB.sort((a, b) => a.n.localeCompare(b.n));
+    parkGolfDB.forEach(item => {
+        item._searchText = (item.name + " " + item.region + " " + item.addr + " " + item.manager).toLowerCase();
+    });
 
     function render(data) {
         const listDiv = document.getElementById('list');
         listDiv.innerHTML = '';
+        if (data.length === 0) {
+            listDiv.innerHTML = '<div style="text-align:center; padding:30px; color:#666;">검색 결과가 없습니다.</div>';
+            return;
+        }
+        const fragment = document.createDocumentFragment();
         data.forEach(item => {
             const card = document.createElement('div');
             card.className = 'card';
+            const resBtnHtml = item.res_url
+                ? `<div class="btn-group">
+                       <button class="btn btn-online reserve-link-btn" data-url="${item.res_url}">💻 예약 시스템 접속</button>
+                       <button class="btn btn-copy copy-url-btn" data-url="${item.res_url}">주소 복사</button>
+                   </div>`
+                : `<div class="btn-group">
+                       <button class="btn btn-disabled no-online-btn" data-name="${item.name}" data-manager="${item.manager}" data-phone="${item.phone}">온라인 예약 미지원</button>
+                   </div>`;
+
             card.innerHTML = `
                 <div class="card-top">
-                    <span class="name">${item.n}</span>
-                    <span class="holes">${item.h}홀</span>
+                    <span class="name">${item.name}</span>
+                    <span class="holes">${item.holes}홀</span>
                 </div>
-                <div class="info">📍 ${item.a}<br>🏛️ ${item.m}</div>
+                <div class="info">
+                    📍 <b>주소:</b> ${item.addr}<br>
+                    🏛️ <b>관리처:</b> <span class="manager-tag">${item.manager}</span>
+                </div>
+                ${resBtnHtml}
                 <div class="btn-group">
-                    ${item.u ? `<a href="${item.u}" target="_blank" class="btn btn-online">💻 예약하기</a>` : `<button class="btn btn-disabled" onclick="alert('이 구장은 현재 온라인 예약을 지원하지 않습니다.\\n전화로 문의해주세요.');">📞 현장문의</button>`}
-                    <button class="btn btn-tmap" onclick="goTmap('${item.n}')">🧭 길안내</button>
-                    <a href="tel:${item.p}" class="btn btn-phone">📞 전화</a>
-                </div>
-            `;
-            listDiv.appendChild(card);
+                    <button class="btn btn-tmap tmap-btn" data-name="${item.name}" data-addr="${item.addr}">🧭 티맵 길안내</button>
+                    <a href="tel:${item.phone}" class="btn btn-phone">📞 전화 연결</a>
+                </div>`;
+            fragment.appendChild(card);
         });
+        listDiv.appendChild(fragment);
     }
 
-    // 3. 기능 함수
-    function goTmap(name) {
-        window.location.href = `tmap://search?name=${encodeURIComponent(name)}`;
+    // 티맵 연동 함수
+    function openTmap(name, addr) {
+        const encodedName = encodeURIComponent(name);
+        // 티맵 앱 스킴 (앱이 있으면 실행, 없으면 웹으로 이동)
+        const tmapUrl = `tmap://search?name=${encodedName}`;
+        const webUrl = `https://map.naver.com/v5/search/${encodedName}`; // 티맵 웹 지도가 불안정할 경우 네이버 검색창으로 폴백
+
+        // 안드로이드/iOS 구분 없이 앱 실행 시도 후 실패 시 웹으로 (기본적인 연동 방식)
+        location.href = tmapUrl;
+        
+        // 앱이 없을 경우를 대비한 2초 후 웹 지도 열기
         setTimeout(() => {
             if (document.hasFocus()) {
-                window.open(`https://m.map.kakao.com/link/search?q=${encodeURIComponent(name)}`, '_blank');
+                window.open(`https://m.map.kakao.com/link/search?q=${encodedName}`, '_blank');
             }
-        }, 1500);
+        }, 2000);
     }
 
-    function filter() {
-        const val = document.getElementById('searchInput').value.toLowerCase();
-        const filtered = parkGolfDB.filter(i => (i.n + i.r + i.a).toLowerCase().includes(val));
-        render(filtered);
+    document.getElementById('list').addEventListener('click', function(e) {
+        const reserveBtn = e.target.closest('.reserve-link-btn');
+        const copyBtn    = e.target.closest('.copy-url-btn');
+        const noOnlineBtn = e.target.closest('.no-online-btn');
+        const tmapBtn = e.target.closest('.tmap-btn');
+
+        if (reserveBtn) {
+            currentTargetUrl = reserveBtn.getAttribute('data-url');
+            showModal('alertModal');
+        } else if (copyBtn) {
+            copyAndOpenBrowser(copyBtn.getAttribute('data-url'));
+        } else if (tmapBtn) {
+            openTmap(tmapBtn.getAttribute('data-name'), tmapBtn.getAttribute('data-addr'));
+        } else if (noOnlineBtn) {
+            alert(noOnlineBtn.getAttribute('data-name') + " 정보...");
+        }
+    });
+
+    document.getElementById('modalBtnGo').addEventListener('click', function() {
+        hideModal('alertModal');
+        window.open(currentTargetUrl, '_blank');
+    });
+    document.getElementById('modalBtnCopy').addEventListener('click', function() {
+        hideModal('alertModal');
+        copyAndOpenBrowser(currentTargetUrl);
+    });
+    document.getElementById('modalBtnClose').addEventListener('click', function() { hideModal('alertModal'); });
+    document.getElementById('copyModalBtnGo').addEventListener('click', function() {
+        hideModal('copySuccessModal');
+        window.open('https://www.google.co.kr', '_blank');
+    });
+    document.getElementById('copyModalBtnClose').addEventListener('click', function() { hideModal('copySuccessModal'); });
+
+    function copyAndOpenBrowser(url) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).catch(() => fallbackCopy(url));
+        } else { fallbackCopy(url); }
+        showModal('copySuccessModal');
     }
 
-    // 검색창 실시간 반영
-    document.getElementById('searchInput').oninput = filter;
+    function fallbackCopy(url) {
+        const ta = document.createElement('textarea');
+        ta.value = url;
+        ta.style.cssText = 'position:fixed;opacity:0;';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+    }
 
-    window.onload = () => {
-        initNews();
+    function filterCourses() {
+        const word = document.getElementById('searchInput').value.trim().toLowerCase();
+        render(parkGolfDB.filter(c => c._searchText.includes(word)));
+    }
+
+    document.getElementById('searchBtn').addEventListener('click', filterCourses);
+    document.getElementById('searchInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') filterCourses();
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        loadNotices();
         render(parkGolfDB);
-    };
+    });
 </script>
 
 </body>
